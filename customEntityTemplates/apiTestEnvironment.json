@@ -1,0 +1,12 @@
+{
+  "code" : "apiTestEnvironment",
+  "name" : "Api Test Environment",
+  "description" : "Api Test Environment",
+  "customEntityCategoryCode" : "apiTesting",
+  "availableStorages" : [ "SQL" ],
+  "sqlStorageConfiguration" : {
+    "storeAsTable" : true
+  },
+  "samples" : [ ],
+  "audited" : false
+}

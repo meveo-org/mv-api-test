@@ -1,0 +1,157 @@
+{
+    "storages": ["SQL"],
+    "default": "Api Test Suite Execution",
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "id": "apiTestSuiteExecution",
+    "title": "Api Test Suite Execution",
+    "type": "object",
+    "properties": {
+        "durationInMs": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Duration of execution in miliseconds",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestSuiteExecution_durationInMs",
+            "title": "apiTestSuiteExecution.durationInMs",
+            "type": "integer"
+        },
+        "variables": {
+            "storages": ["SQL"],
+            "patternProperties": {"^.*$": {
+                "id": "CE_apiTestSuiteExecution_variables_item",
+                "title": "apiTestSuiteExecution.variables item",
+                "type": "string"
+            }},
+            "nullable": true,
+            "description": "Variable list",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestSuiteExecution_variables",
+            "title": "apiTestSuiteExecution.variables",
+            "type": "object"
+        },
+        "endDate": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "format": "date-time",
+            "description": "End Date",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestSuiteExecution_endDate",
+            "title": "apiTestSuiteExecution.endDate",
+            "type": "string"
+        },
+        "failureNb": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Failure Nb",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestSuiteExecution_failureNb",
+            "title": "apiTestSuiteExecution.failureNb",
+            "type": "integer"
+        },
+        "creationDate": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "format": "date-time",
+            "description": "Creation Date",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestSuiteExecution_creationDate",
+            "title": "apiTestSuiteExecution.creationDate",
+            "type": "string"
+        },
+        "pauseDurationInMs": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Pause duration in miliseconds",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestSuiteExecution_pauseDurationInMs",
+            "title": "apiTestSuiteExecution.pauseDurationInMs",
+            "type": "integer"
+        },
+        "successNb": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Success Nb",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestSuiteExecution_successNb",
+            "title": "apiTestSuiteExecution.successNb",
+            "type": "integer"
+        },
+        "testEnvironment": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Test environment",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestSuiteExecution_testEnvironment",
+            "title": "apiTestSuiteExecution.testEnvironment",
+            "type": "string",
+            "maxLength": 255
+        },
+        "caseNb": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Case Nb",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestSuiteExecution_caseNb",
+            "title": "apiTestSuiteExecution.caseNb",
+            "type": "integer"
+        },
+        "report": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Report of testing",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestSuiteExecution_report",
+            "title": "apiTestSuiteExecution.report",
+            "type": "string"
+        },
+        "postmanCollection": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Code of postman collection",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestSuiteExecution_postmanCollection",
+            "title": "apiTestSuiteExecution.postmanCollection",
+            "type": "string",
+            "maxLength": 255
+        },
+        "startDate": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "format": "date-time",
+            "description": "Start Date",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestSuiteExecution_startDate",
+            "title": "apiTestSuiteExecution.startDate",
+            "type": "string"
+        },
+        "status": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Status",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestSuiteExecution_status",
+            "title": "apiTestSuiteExecution.status",
+            "enum": [
+                "PAUSED",
+                "SUCCESS",
+                "FAILED",
+                "STARTED",
+                "ABORTED",
+                "PLANNED"
+            ]
+        }
+    }
+}

@@ -1,0 +1,12 @@
+{
+  "code" : "apiTestSuiteExecution",
+  "name" : "Api Test Suite Execution",
+  "description" : "Api Test Suite Execution",
+  "customEntityCategoryCode" : "apiTesting",
+  "availableStorages" : [ "SQL" ],
+  "sqlStorageConfiguration" : {
+    "storeAsTable" : true
+  },
+  "samples" : [ ],
+  "audited" : false
+}

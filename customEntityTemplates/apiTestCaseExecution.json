@@ -1,0 +1,12 @@
+{
+  "code" : "apiTestCaseExecution",
+  "name" : "Api Test Case Execution",
+  "description" : "Api Test Case Execution",
+  "customEntityCategoryCode" : "apiTesting",
+  "availableStorages" : [ "SQL" ],
+  "sqlStorageConfiguration" : {
+    "storeAsTable" : true
+  },
+  "samples" : [ ],
+  "audited" : false
+}

@@ -1,0 +1,10 @@
+{
+  "code" : "mv-api-test",
+  "description" : "Api testing",
+  "license" : "GPL",
+  "currentVersion" : "0.1",
+  "isInDraft" : true,
+  "autoCommit" : false,
+  "moduleDependencies" : [ ],
+  "moduleFiles" : [ ]
+}

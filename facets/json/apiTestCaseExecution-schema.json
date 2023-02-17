@@ -1,0 +1,184 @@
+{
+    "storages": ["SQL"],
+    "default": "Api Test Case Execution",
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "id": "apiTestCaseExecution",
+    "title": "Api Test Case Execution",
+    "type": "object",
+    "properties": {
+        "durationInMs": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Duration of execution in miliseconds",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_durationInMs",
+            "title": "apiTestCaseExecution.durationInMs",
+            "type": "integer"
+        },
+        "method": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Http method",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_method",
+            "title": "apiTestCaseExecution.method",
+            "enum": [
+                "HEAD",
+                "DELETE",
+                "POST",
+                "GET",
+                "PATCH",
+                "PUT"
+            ]
+        },
+        "endDate": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "format": "date-time",
+            "description": "End Date",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_endDate",
+            "title": "apiTestCaseExecution.endDate",
+            "type": "string"
+        },
+        "testSuite": {
+            "storages": ["SQL"],
+            "nullable": false,
+            "description": "Reference to Api Test Suite Execution",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_testSuite",
+            "title": "apiTestCaseExecution.testSuite",
+            "$ref": "#/definitions/apiTestSuiteExecution"
+        },
+        "index": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Index",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_index",
+            "title": "apiTestCaseExecution.index",
+            "type": "integer"
+        },
+        "creationDate": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "format": "date-time",
+            "description": "Creation Date",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_creationDate",
+            "title": "apiTestCaseExecution.creationDate",
+            "type": "string"
+        },
+        "pauseDurationInMs": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Pause duration in miliseconds",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_pauseDurationInMs",
+            "title": "apiTestCaseExecution.pauseDurationInMs",
+            "type": "integer"
+        },
+        "requestQuery": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Request of query",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_requestQuery",
+            "title": "apiTestCaseExecution.requestQuery",
+            "type": "string"
+        },
+        "requestHeaders": {
+            "storages": ["SQL"],
+            "patternProperties": {"^.*$": {
+                "id": "CE_apiTestCaseExecution_requestHeaders_item",
+                "title": "apiTestCaseExecution.requestHeaders item",
+                "type": "string"
+            }},
+            "nullable": true,
+            "description": "Headers of request",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_requestHeaders",
+            "title": "apiTestCaseExecution.requestHeaders",
+            "type": "object"
+        },
+        "requestBody": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Body of request",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_requestBody",
+            "title": "apiTestCaseExecution.requestBody",
+            "type": "string"
+        },
+        "name": {
+            "storages": ["SQL"],
+            "nullable": false,
+            "minLength": 1,
+            "description": "Name of test case",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_name",
+            "title": "apiTestCaseExecution.name",
+            "type": "string",
+            "maxLength": 255
+        },
+        "report": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Report of testing",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_report",
+            "title": "apiTestCaseExecution.report",
+            "type": "string"
+        },
+        "startDate": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "format": "date-time",
+            "description": "Start Date",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_startDate",
+            "title": "apiTestCaseExecution.startDate",
+            "type": "string"
+        },
+        "status": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "uniqueItems": true,
+            "description": "Status",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_status",
+            "title": "apiTestCaseExecution.status",
+            "type": "array",
+            "items": {
+                "id": "CE_apiTestCaseExecution_status_item",
+                "title": "apiTestCaseExecution.status item",
+                "enum": [
+                    "PAUSED",
+                    "SUCCESS",
+                    "FAILED",
+                    "STARTED",
+                    "ABORTED",
+                    "PLANNED"
+                ]
+            }
+        }
+    },
+    "required": [
+        "name",
+        "testSuite"
+    ]
+}
