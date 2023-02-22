@@ -1,0 +1,38 @@
+{
+    "storages": ["SQL"],
+    "default": "Api Test Environment",
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "id": "ApiTestEnvironment",
+    "title": "Api Test Environment",
+    "type": "object",
+    "properties": {
+        "variables": {
+            "storages": ["SQL"],
+            "patternProperties": {"^.*$": {
+                "id": "CE_ApiTestEnvironment_variables_item",
+                "title": "ApiTestEnvironment.variables item",
+                "type": "string"
+            }},
+            "nullable": true,
+            "description": "Variable list of api test environment",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_ApiTestEnvironment_variables",
+            "title": "ApiTestEnvironment.variables",
+            "type": "object"
+        },
+        "name": {
+            "storages": ["SQL"],
+            "nullable": false,
+            "minLength": 1,
+            "description": "Name of api testing environment",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_ApiTestEnvironment_name",
+            "title": "ApiTestEnvironment.name",
+            "type": "string",
+            "maxLength": 255
+        }
+    },
+    "required": ["name"]
+}

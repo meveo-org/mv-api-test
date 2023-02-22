@@ -1,5 +1,5 @@
 {
-  "code" : "apiTestEnvironment",
+  "code" : "ApiTestEnvironment",
   "name" : "Api Test Environment",
   "description" : "Api Test Environment",
   "customEntityCategoryCode" : "apiTesting",

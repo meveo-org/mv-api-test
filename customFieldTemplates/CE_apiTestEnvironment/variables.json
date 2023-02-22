@@ -1,9 +1,9 @@
 {
   "code" : "variables",
-  "description" : "Variable list of test environment",
+  "description" : "Variable list of api test environment",
   "fieldType" : "LONG_TEXT",
-  "accountLevel" : "CE_apiTestEnvironment",
-  "appliesTo" : "CE_apiTestEnvironment",
+  "accountLevel" : "CE_ApiTestEnvironment",
+  "appliesTo" : "CE_ApiTestEnvironment",
   "useInheritedAsDefaultValue" : false,
   "storageType" : "MAP",
   "valueRequired" : false,

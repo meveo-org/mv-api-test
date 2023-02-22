@@ -6,17 +6,15 @@ import java.util.List;
 import org.meveo.model.persistence.DBStorageType;
 import java.util.Map;
 import java.util.HashMap;
-import org.meveo.model.customEntities.Credential;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.meveo.model.admin.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class apiTestEnvironment implements CustomEntity, Serializable {
+public class ApiTestEnvironment implements CustomEntity, Serializable {
 
-    public apiTestEnvironment() {
+    public ApiTestEnvironment() {
     }
 
-    public apiTestEnvironment(String uuid) {
+    public ApiTestEnvironment(String uuid) {
         this.uuid = uuid;
     }
 
@@ -27,12 +25,8 @@ public class apiTestEnvironment implements CustomEntity, Serializable {
 
     private Map<String, String> variables = new HashMap<>();
 
-    private Credential credential;
-
     @JsonProperty(required = true)
     private String name;
-
-    private User userToNotify;
 
     @Override()
     public String getUuid() {
@@ -59,14 +53,6 @@ public class apiTestEnvironment implements CustomEntity, Serializable {
         this.variables = variables;
     }
 
-    public Credential getCredential() {
-        return credential;
-    }
-
-    public void setCredential(Credential credential) {
-        this.credential = credential;
-    }
-
     public String getName() {
         return name;
     }
@@ -75,16 +61,8 @@ public class apiTestEnvironment implements CustomEntity, Serializable {
         this.name = name;
     }
 
-    public User getUserToNotify() {
-        return userToNotify;
-    }
-
-    public void setUserToNotify(User userToNotify) {
-        this.userToNotify = userToNotify;
-    }
-
     @Override()
     public String getCetCode() {
-        return "apiTestEnvironment";
+        return "ApiTestEnvironment";
     }
 }
