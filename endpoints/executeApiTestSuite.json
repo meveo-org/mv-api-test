@@ -1,0 +1,35 @@
+{
+  "code" : "executeApiTestSuite",
+  "description" : "Execute Api Test Suite",
+  "secured" : true,
+  "checkPathParams" : true,
+  "serviceCode" : "org.meveo.postman.ExecuteApiTestSuite",
+  "synchronous" : true,
+  "method" : "POST",
+  "parameterMappings" : [ {
+    "serviceParameter" : "code",
+    "multivalued" : false,
+    "parameterName" : "code",
+    "valueRequired" : false
+  }, {
+    "serviceParameter" : "content",
+    "multivalued" : false,
+    "parameterName" : "content",
+    "valueRequired" : false
+  }, {
+    "serviceParameter" : "environmentCode",
+    "multivalued" : false,
+    "parameterName" : "environmentCode",
+    "valueRequired" : false
+  } ],
+  "pathParameters" : [ ],
+  "roles" : [ ],
+  "returnedVariableName" : "result",
+  "serializeResult" : true,
+  "contentType" : "application/json",
+  "basePath" : "executeApiTestSuite",
+  "path" : "/",
+  "pool" : {
+    "usePool" : false
+  }
+}

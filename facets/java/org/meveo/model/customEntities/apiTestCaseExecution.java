@@ -39,6 +39,8 @@ public class apiTestCaseExecution implements CustomEntity, Serializable {
 
     private Instant creationDate;
 
+    private Long responseStatus;
+
     private Long pauseDurationInMs;
 
     private String requestQuery;
@@ -119,6 +121,14 @@ public class apiTestCaseExecution implements CustomEntity, Serializable {
 
     public void setCreationDate(Instant creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public Long getResponseStatus() {
+        return responseStatus;
+    }
+
+    public void setResponseStatus(Long responseStatus) {
+        this.responseStatus = responseStatus;
     }
 
     public Long getPauseDurationInMs() {

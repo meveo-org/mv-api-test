@@ -75,6 +75,16 @@
             "title": "apiTestCaseExecution.creationDate",
             "type": "string"
         },
+        "responseStatus": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Status of Reponse",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_responseStatus",
+            "title": "apiTestCaseExecution.responseStatus",
+            "type": "integer"
+        },
         "pauseDurationInMs": {
             "storages": ["SQL"],
             "nullable": true,
