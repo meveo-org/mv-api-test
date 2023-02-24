@@ -152,7 +152,7 @@ public class ExecuteApiTestSuite extends Script {
 
     private PostmanCollection createNewCollection(String collectionCode, String collectionContent, String collectionChecksum) {
         int collectionCount = crossStorageApi.find(PostmanCollection.class)
-                                            .like("code", code + "*")
+                                            .like("code", code + "_(*")
                                             .fetch("code")
                                             .getResults()
                                             .size();
@@ -394,6 +394,7 @@ public class ExecuteApiTestSuite extends Script {
             apiTestCase.setName((String)item.get("name"));
             apiTestCase.setCreationDate(Instant.now());
             apiTestCase.setStatus("PLANED");
+			CreateOrUpdateTestCase(apiTestCase);
 
 			Map<String, Object> request = (Map<String, Object>) item.get("request");
             apiTestCase.setMethod((String)request.get("method"));
@@ -428,15 +429,18 @@ public class ExecuteApiTestSuite extends Script {
 			}
 			if (request.containsKey("header")) {
 				ArrayList<Object> headers = (ArrayList<Object>) request.get("header");
-
-                // apiTestCase.setRequestHeaders(headers.toString());
+				Map<String, String> requestHeaders = new HashMap<String, String>();
 
 				for (Object rawParam : headers) {
 					Map<String, Object> param = (Map<String, Object>) rawParam;
 					String val = replaceVars((String) param.get("value"));
+
 					log.debug("add header " + param.get("key") + " = " + val);
 					requestBuilder.header((String) param.get("key"), val);
+					requestHeaders.put(""+param.get("key"),val);
 				}
+
+				apiTestCase.setRequestHeaders(requestHeaders);
 			}
 			Response response = null;
 			if ("GET".equals(request.get("method"))) {
@@ -511,31 +515,40 @@ public class ExecuteApiTestSuite extends Script {
 				throw new ScriptException("invalid request type : " + request.get("method"));
 			}
 			log.info("response status :" + response.getStatus());
-          	apiTestCase.setResponseStatus((long)response.getStatus());          	
+          	apiTestCase.setResponseStatus((long)response.getStatus());
+			CreateOrUpdateTestCase(apiTestCase);
           
 			jsEngine.getContext().setAttribute("req_status", response.getStatus(), ScriptContext.GLOBAL_SCOPE);
 			if (response.getStatus() >= 300) {
 				response.close();
-				throw new ScriptException("response status " + response.getStatus());
+				//throw new ScriptException("response status " + response.getStatus());
+				apiTestCase.setResponseStatus((long)response.getStatus());
+				apiTestCase.setStatus("FAILED");
+				CreateOrUpdateTestCase(apiTestCase);
 			}
 			cookieRegister.addCookiesFromResponse(response);
 			String value = response.readEntity(String.class);
 			log.info("response  :" + value);
-          	apiTestCase.setReport(value);
+          	apiTestCase.setResponseBody(value);
 			response.close();
 			jsEngine.getContext().setAttribute("req_response", value, ScriptContext.GLOBAL_SCOPE);
-          	try{
-              log.info( new StringBuilder("apiTestCase:{responseStatus=").append(apiTestCase.getResponseStatus()).append(", ")
-                       .append("methodType=").append(apiTestCase.getMethod()).append(", ")
-                       .append("testRequestId=").append(apiTestCase.getUuid()).append(", ")
-                       .append("requestBody=").append(apiTestCase.getRequestBody()).append(", ")
-                       .append("testConfigId=").append(apiTestCase.getTestSuite().getUuid()).append(", ")
-                       .append("endpoint=").append(apiTestCase.getRequestQuery())
-                       .append("}").toString());
-              crossStorageApi.createOrUpdate(defaultRepo, apiTestCase);
-            } catch(Exception ex){
-              log.error(ex.getMessage());
-            }
+			CreateOrUpdateTestCase(apiTestCase);
+		}
+
+		private void CreateOrUpdateTestCase(apiTestCaseExecution apiTestCase) {
+			try{
+				log.info( new StringBuilder("apiTestCase:{responseStatus=").append(apiTestCase.getResponseStatus()).append(", ")
+						 .append("methodType=").append(apiTestCase.getMethod()).append(", ")
+						 .append("testRequestId=").append(apiTestCase.getUuid()).append(", ")
+						 .append("requestBody=").append(apiTestCase.getRequestBody()).append(", ")
+						 .append("testConfigId=").append(apiTestCase.getTestSuite().getUuid()).append(", ")
+						 .append("endpoint=").append(apiTestCase.getRequestQuery())
+						 .append("}").toString());
+				var id = crossStorageApi.createOrUpdate(defaultRepo, apiTestCase);
+				apiTestCase.setUuid(id);
+			  } catch(Exception ex){
+				log.error(ex.getMessage());
+			  }
 		}
 
 		public String replaceVars(String input) {
