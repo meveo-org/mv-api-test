@@ -93,7 +93,7 @@ public class ExecuteApiTestSuite extends Script {
                 .withTestSuite(testSuite)
                 .runScript();
 
-            result = "OK";
+            result = "Done.";
         }
         catch (Exception ex) {
             result = getStackTrace(ex);
@@ -389,18 +389,26 @@ public class ExecuteApiTestSuite extends Script {
 			client.register(cookieRegister);
 			client.register(new LoggingFilter());
 
+            apiTestCaseExecution apiTestCase = new apiTestCaseExecution();
+            apiTestCase.setTestSuite(this.testSuite);
+            apiTestCase.setName((String)item.get("name"));
+            apiTestCase.setCreationDate(Instant.now());
+            apiTestCase.setStatus("PLANED");
+
 			Map<String, Object> request = (Map<String, Object>) item.get("request");
-          	apiTestCaseExecution apiTestCase = new apiTestCaseExecution();
+            apiTestCase.setMethod((String)request.get("method"));
 
 			Map<String, Object> url = (Map<String, Object>) request.get("url");
+            
 			String rawUrl = (String) url.get("raw");
 			String resolvedUrl = replaceVars(rawUrl);
 			System.out.println("calling :" + resolvedUrl);
-          	apiTestCase.setTestSuite(this.testSuite);
+          	
           	apiTestCase.setRequestQuery(resolvedUrl);
 
             ResteasyWebTarget target = client.target(resolvedUrl);
 			Invocation.Builder requestBuilder = target.request();
+
 			if (request.containsKey("auth")) {
 				Map<String, Object> auth = (Map<String, Object>) request.get("auth");
 				String authType = (String) auth.get("type");
@@ -420,6 +428,9 @@ public class ExecuteApiTestSuite extends Script {
 			}
 			if (request.containsKey("header")) {
 				ArrayList<Object> headers = (ArrayList<Object>) request.get("header");
+
+                // apiTestCase.setRequestHeaders(headers.toString());
+
 				for (Object rawParam : headers) {
 					Map<String, Object> param = (Map<String, Object>) rawParam;
 					String val = replaceVars((String) param.get("value"));
@@ -432,7 +443,9 @@ public class ExecuteApiTestSuite extends Script {
 				response = requestBuilder.get();
 			} else if ("POST".equals(request.get("method")) || "PUT".equals(request.get("method"))) {
 				Entity<?> entity = null;
+
 				Map<String, Object> body = (Map<String, Object>) request.get("body");
+
 				if ("urlencoded".equals(body.get("mode"))) {
                     log.debug("method=POST ");
 					ArrayList<Object> formdata = (ArrayList<Object>) body.get("urlencoded");
@@ -498,9 +511,7 @@ public class ExecuteApiTestSuite extends Script {
 				throw new ScriptException("invalid request type : " + request.get("method"));
 			}
 			log.info("response status :" + response.getStatus());
-          	apiTestCase.setResponseStatus((long)response.getStatus());
-          	apiTestCase.setMethod((String)request.get("method"));
-          	apiTestCase.setTestSuite(this.testSuite);
+          	apiTestCase.setResponseStatus((long)response.getStatus());          	
           
 			jsEngine.getContext().setAttribute("req_status", response.getStatus(), ScriptContext.GLOBAL_SCOPE);
 			if (response.getStatus() >= 300) {
@@ -604,8 +615,6 @@ public class ExecuteApiTestSuite extends Script {
 		public void setTrustAllCertificates(boolean trustAllCertificates) {
 			this.trustAllCertificates = trustAllCertificates;
 		}
-
-		
 
 		public int getTotalRequest() {
 			return totalRequest;

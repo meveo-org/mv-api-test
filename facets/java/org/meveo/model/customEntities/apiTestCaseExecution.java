@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.meveo.model.customEntities.apiTestSuiteExecution;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class apiTestCaseExecution implements CustomEntity, Serializable {
@@ -27,6 +26,8 @@ public class apiTestCaseExecution implements CustomEntity, Serializable {
     private DBStorageType storages;
 
     private Long durationInMs;
+
+    private String responseBody;
 
     private String method;
 
@@ -47,6 +48,8 @@ public class apiTestCaseExecution implements CustomEntity, Serializable {
 
     private Map<String, String> requestHeaders = new HashMap<>();
 
+    private Map<String, String> responseHeaders = new HashMap<>();
+
     private String requestBody;
 
     @JsonProperty(required = true)
@@ -56,7 +59,7 @@ public class apiTestCaseExecution implements CustomEntity, Serializable {
 
     private Instant startDate;
 
-    private List<String> status = new ArrayList<>();
+    private String status;
 
     @Override()
     public String getUuid() {
@@ -81,6 +84,14 @@ public class apiTestCaseExecution implements CustomEntity, Serializable {
 
     public void setDurationInMs(Long durationInMs) {
         this.durationInMs = durationInMs;
+    }
+
+    public String getResponseBody() {
+        return responseBody;
+    }
+
+    public void setResponseBody(String responseBody) {
+        this.responseBody = responseBody;
     }
 
     public String getMethod() {
@@ -155,6 +166,14 @@ public class apiTestCaseExecution implements CustomEntity, Serializable {
         this.requestHeaders = requestHeaders;
     }
 
+    public Map<String, String> getResponseHeaders() {
+        return responseHeaders;
+    }
+
+    public void setResponseHeaders(Map<String, String> responseHeaders) {
+        this.responseHeaders = responseHeaders;
+    }
+
     public String getRequestBody() {
         return requestBody;
     }
@@ -187,11 +206,11 @@ public class apiTestCaseExecution implements CustomEntity, Serializable {
         this.startDate = startDate;
     }
 
-    public List<String> getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(List<String> status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 

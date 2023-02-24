@@ -14,7 +14,7 @@
   "contentTypes" : [ ],
   "fileExtensions" : [ ],
   "saveOnExplorer" : false,
-  "guiPosition" : "tab:Api Test Case Execution:0;field:9",
+  "guiPosition" : "tab:Api Test Case Execution:0;field:8",
   "identifier" : false,
   "storages" : [ "SQL" ],
   "samples" : [ ],

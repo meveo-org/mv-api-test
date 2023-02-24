@@ -16,6 +16,16 @@
             "title": "apiTestCaseExecution.durationInMs",
             "type": "integer"
         },
+        "responseBody": {
+            "storages": ["SQL"],
+            "nullable": true,
+            "description": "Body of response",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_responseBody",
+            "title": "apiTestCaseExecution.responseBody",
+            "type": "string"
+        },
         "method": {
             "storages": ["SQL"],
             "nullable": true,
@@ -120,6 +130,21 @@
             "title": "apiTestCaseExecution.requestHeaders",
             "type": "object"
         },
+        "responseHeaders": {
+            "storages": ["SQL"],
+            "patternProperties": {"^.*$": {
+                "id": "CE_apiTestCaseExecution_responseHeaders_item",
+                "title": "apiTestCaseExecution.responseHeaders item",
+                "type": "string"
+            }},
+            "nullable": true,
+            "description": "Headers of response",
+            "readOnly": false,
+            "versionable": false,
+            "id": "CE_apiTestCaseExecution_responseHeaders",
+            "title": "apiTestCaseExecution.responseHeaders",
+            "type": "object"
+        },
         "requestBody": {
             "storages": ["SQL"],
             "nullable": true,
@@ -166,25 +191,19 @@
         "status": {
             "storages": ["SQL"],
             "nullable": true,
-            "uniqueItems": true,
             "description": "Status",
             "readOnly": false,
             "versionable": false,
             "id": "CE_apiTestCaseExecution_status",
             "title": "apiTestCaseExecution.status",
-            "type": "array",
-            "items": {
-                "id": "CE_apiTestCaseExecution_status_item",
-                "title": "apiTestCaseExecution.status item",
-                "enum": [
-                    "PAUSED",
-                    "SUCCESS",
-                    "FAILED",
-                    "STARTED",
-                    "ABORTED",
-                    "PLANNED"
-                ]
-            }
+            "enum": [
+                "PAUSED",
+                "SUCCESS",
+                "FAILED",
+                "STARTED",
+                "PLANED",
+                "ABORTED"
+            ]
         }
     },
     "required": [
