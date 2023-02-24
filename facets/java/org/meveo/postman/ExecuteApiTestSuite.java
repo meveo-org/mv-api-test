@@ -378,6 +378,14 @@ public class ExecuteApiTestSuite extends Script {
 
 		private void executeItem(Map<String, Object> item) throws ScriptException {
 			log.info("executing item :" + item.get("name"));
+
+			apiTestCaseExecution apiTestCase = new apiTestCaseExecution();
+            apiTestCase.setTestSuite(this.testSuite);
+            apiTestCase.setName((String)item.get("name"));
+            apiTestCase.setCreationDate(Instant.now());
+            apiTestCase.setStatus("PLANED");
+			CreateOrUpdateTestCase(apiTestCase);
+			
           	ResteasyClient client = null;
           
 			if (trustAllCertificates) {
@@ -389,12 +397,7 @@ public class ExecuteApiTestSuite extends Script {
 			client.register(cookieRegister);
 			client.register(new LoggingFilter());
 
-            apiTestCaseExecution apiTestCase = new apiTestCaseExecution();
-            apiTestCase.setTestSuite(this.testSuite);
-            apiTestCase.setName((String)item.get("name"));
-            apiTestCase.setCreationDate(Instant.now());
-            apiTestCase.setStatus("PLANED");
-			CreateOrUpdateTestCase(apiTestCase);
+            
 
 			Map<String, Object> request = (Map<String, Object>) item.get("request");
             apiTestCase.setMethod((String)request.get("method"));
@@ -442,6 +445,10 @@ public class ExecuteApiTestSuite extends Script {
 
 				apiTestCase.setRequestHeaders(requestHeaders);
 			}
+
+			apiTestCase.setStatus("STARTED");
+			CreateOrUpdateTestCase(apiTestCase);
+
 			Response response = null;
 			if ("GET".equals(request.get("method"))) {
 				response = requestBuilder.get();
@@ -471,6 +478,9 @@ public class ExecuteApiTestSuite extends Script {
 										MediaType.APPLICATION_OCTET_STREAM_TYPE);
 							} catch (FileNotFoundException e) {
 								response.close();
+								apiTestCase.setResponseStatus((long)response.getStatus());
+								apiTestCase.setStatus("FAILED");
+								CreateOrUpdateTestCase(apiTestCase);
 								throw new ScriptException("cannot read file : " + request.get("method"));
 							}
 						} else {
@@ -494,6 +504,9 @@ public class ExecuteApiTestSuite extends Script {
 								MediaType.APPLICATION_OCTET_STREAM_TYPE); //NOTE we allow to use variables in the file src
 					} catch (FileNotFoundException e) {
 						response.close();
+						apiTestCase.setResponseStatus((long)response.getStatus());
+						apiTestCase.setStatus("FAILED");
+						CreateOrUpdateTestCase(apiTestCase);
 						throw new ScriptException("cannot read file : " + request.get("method"));
 					}
 					entity = Entity.entity(mdo, MediaType.MULTIPART_FORM_DATA_TYPE);
@@ -512,6 +525,9 @@ public class ExecuteApiTestSuite extends Script {
 			}
 			if (response == null) {
 				response.close();
+				apiTestCase.setResponseStatus((long)response.getStatus());
+				apiTestCase.setStatus("FAILED");
+				CreateOrUpdateTestCase(apiTestCase);
 				throw new ScriptException("invalid request type : " + request.get("method"));
 			}
 			log.info("response status :" + response.getStatus());
@@ -520,16 +536,18 @@ public class ExecuteApiTestSuite extends Script {
           
 			jsEngine.getContext().setAttribute("req_status", response.getStatus(), ScriptContext.GLOBAL_SCOPE);
 			if (response.getStatus() >= 300) {
-				response.close();
-				//throw new ScriptException("response status " + response.getStatus());
+				response.close();				
 				apiTestCase.setResponseStatus((long)response.getStatus());
 				apiTestCase.setStatus("FAILED");
 				CreateOrUpdateTestCase(apiTestCase);
+				throw new ScriptException("response status " + response.getStatus());
 			}
 			cookieRegister.addCookiesFromResponse(response);
 			String value = response.readEntity(String.class);
 			log.info("response  :" + value);
           	apiTestCase.setResponseBody(value);
+			apiTestCase.setResponseStatus((long)response.getStatus());
+			apiTestCase.setStatus(response.getStatus() == 200 ? "SUCCESS" : "FAILED");
 			response.close();
 			jsEngine.getContext().setAttribute("req_response", value, ScriptContext.GLOBAL_SCOPE);
 			CreateOrUpdateTestCase(apiTestCase);
