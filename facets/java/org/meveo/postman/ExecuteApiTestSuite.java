@@ -17,6 +17,7 @@ import org.meveo.service.admin.impl.MeveoModuleService;
 import org.meveo.model.customEntities.*;
 import org.meveo.model.storage.Repository;
 import org.meveo.api.persistence.CrossStorageApi;
+import org.meveo.api.exception.*;
 import org.meveo.service.git.GitHelper;
 import org.meveo.security.MeveoUser;
 import javax.script.*;
@@ -85,13 +86,13 @@ public class ExecuteApiTestSuite extends Script {
 
             var collection = getPostmanCollection(code, content);
 
-            var testSuite = setupTestingSuite(env, collection);            
+            var testSuite = setupTestingSuite(env, collection);
 
             PostmanRunnerScript runner  = new PostmanRunnerScript();
 
-            runner.withPostmanJsonCollection(collection.getContent())
-                .withTestSuite(testSuite)
-                .runScript();
+            runner.withPostmanCollection(collection)
+					.withTestSuite(testSuite)
+					.runScript();
 
             result = "Done.";
         }
@@ -102,6 +103,7 @@ public class ExecuteApiTestSuite extends Script {
 
     private apiTestSuiteExecution setupTestingSuite(ApiTestEnvironment env, PostmanCollection testCollection) {
         apiTestSuiteExecution testSuite = new apiTestSuiteExecution();
+
         testSuite.setCreationDate(Instant.now());
         testSuite.setStatus("PLANNED");
         testSuite.setPostmanCollection(testCollection.getCode());
@@ -240,7 +242,7 @@ public class ExecuteApiTestSuite extends Script {
 
     private class PostmanRunnerScript {
 		//input
-		private String postmanJsonCollection;
+		private PostmanCollection postmanCollection;
         private ArrayList<Object> postmanTestItems;
 
 		private boolean stopOnError=true;
@@ -249,6 +251,7 @@ public class ExecuteApiTestSuite extends Script {
 		//output
 		private int totalRequest = 0;
 		private int failedRequest = 0;
+		private int successRequest = 0;
 		private Map<String, String> context;
       	private String configId;
         private apiTestSuiteExecution testSuite;
@@ -260,11 +263,23 @@ public class ExecuteApiTestSuite extends Script {
 		private List<String> failedRequestName = new ArrayList<>();
 		private List<String> failedTestName = new ArrayList<>();
 
-        public PostmanRunnerScript withPostmanJsonCollection(String postmanJsonCollection) throws IOException {
-            this.postmanJsonCollection = postmanJsonCollection;
+		public PostmanRunnerScript() {
+			cookieRegister = new CookieRegister();
+		}
+
+		public PostmanRunnerScript withTestSuite(apiTestSuiteExecution testSuite) throws BusinessException {
+            this.testSuite = testSuite;
+            this.configId = testSuite.getUuid().toString();
+            this.context = testSuite.getVariables();
+			this.jsEngine = setupJavascriptEngine(this.context);
+            return this;
+        }
+
+        public PostmanRunnerScript withPostmanCollection(PostmanCollection postmanCollection) throws IOException {
+            this.postmanCollection = postmanCollection;
 
             ObjectMapper mapper = new ObjectMapper();
-            Map<String, Object> map = mapper.readValue(postmanJsonCollection, Map.class);
+            Map<String, Object> map = mapper.readValue(postmanCollection.getContent(), Map.class);
             Map<String, Object> info = (Map<String, Object>) map.get("info");
             log.debug("executing collection :" + info.get("name"));
 
@@ -273,21 +288,23 @@ public class ExecuteApiTestSuite extends Script {
             return this;
         }
 
-        public PostmanRunnerScript withTestSuite(apiTestSuiteExecution testSuite) {
-            this.testSuite = testSuite;
-            this.configId = testSuite.getUuid().toString();
-            this.context = testSuite.getVariables();
-            return this;
-        }
-
 		public void runScript() throws BusinessException{
-			try {
-                jsEngine = setupJavascriptEngine(this.context);
-				cookieRegister = new CookieRegister();
-				executeItemList(this.postmanTestItems);
+			executeCollection(this.postmanTestItems);
+			UpdateTestSuite(this.testSuite);
+		}
 
-			} catch (Exception e) {
-				e.printStackTrace();
+		private void UpdateTestSuite(apiTestSuiteExecution apiTestSuite) {
+			try {
+				apiTestSuite.setVariables(this.context);
+				apiTestSuite.setCaseNb((long)this.totalRequest);
+				apiTestSuite.setFailureNb((long)this.failedTest);
+				apiTestSuite.setSuccessNb((long)this.successRequest);
+				apiTestSuite.setStatus(this.totalRequest == this.successRequest ? "SUCCESS" : "FAILED");
+
+				crossStorageApi.createOrUpdate(defaultRepo, apiTestSuite);
+
+			} catch (Exception e) {				
+				throw new RuntimeException("Failed to save testing suite.", e);
 			}
 		}
 
@@ -330,9 +347,10 @@ public class ExecuteApiTestSuite extends Script {
             return javascriptEngine;
         }
 
-		private void executeItemList(ArrayList<Object> items) {
+		private void executeCollection(ArrayList<Object> items) {
 			log.debug("items  :" + items.size());
             log.info("items[0]="+items.get(0));
+
 			for (Object rawItem : items) {
 				Map<String, Object> item = (Map<String, Object>) rawItem;
                 item.keySet().forEach(k->log.info(k.toString()));
@@ -343,9 +361,10 @@ public class ExecuteApiTestSuite extends Script {
 					if (events != null) {
 						executeEvent((String) item.get("name"), "prerequest", events);
 					}
+
 					if (isSection) {
 						ArrayList<Object> subItems = (ArrayList<Object>) item.get("item");
-						executeItemList(subItems);
+						executeCollection(subItems);
 					} else {
 						totalRequest++;
 						executeItem(item);
@@ -354,6 +373,7 @@ public class ExecuteApiTestSuite extends Script {
 					if (events != null) {
 						executeEvent((String) item.get("name"), "test", events);
 					}
+					successRequest++;
 				} catch (ScriptException e) {
 					e.printStackTrace();
 					failedRequest++;
@@ -375,7 +395,6 @@ public class ExecuteApiTestSuite extends Script {
 			return null;
 		}
 
-
 		private void executeItem(Map<String, Object> item) throws ScriptException {
 			log.info("executing item :" + item.get("name"));
 
@@ -385,7 +404,7 @@ public class ExecuteApiTestSuite extends Script {
             apiTestCase.setCreationDate(Instant.now());
             apiTestCase.setStatus("PLANED");
 			CreateOrUpdateTestCase(apiTestCase);
-			
+
           	ResteasyClient client = null;
           
 			if (trustAllCertificates) {
@@ -396,8 +415,6 @@ public class ExecuteApiTestSuite extends Script {
 
 			client.register(cookieRegister);
 			client.register(new LoggingFilter());
-
-            
 
 			Map<String, Object> request = (Map<String, Object>) item.get("request");
             apiTestCase.setMethod((String)request.get("method"));
@@ -511,7 +528,10 @@ public class ExecuteApiTestSuite extends Script {
 					}
 					entity = Entity.entity(mdo, MediaType.MULTIPART_FORM_DATA_TYPE);
 				}
+
                 log.info("Request Body looks like =>"+entity.toString());
+				apiTestCase.setRequestBody(entity.toString());
+
 				if ("POST".equals(request.get("method"))) {
                     log.debug("Just before making a post call");
 					response = requestBuilder.post(entity);
@@ -519,10 +539,11 @@ public class ExecuteApiTestSuite extends Script {
 				} else {
 					response = requestBuilder.put(entity);
 				}
-              	apiTestCase.setRequestBody(entity.toString());
+              	
 			} else if ("DELETE".equals(request.get("method"))) {
 				response = requestBuilder.delete();
 			}
+
 			if (response == null) {
 				response.close();
 				apiTestCase.setResponseStatus((long)response.getStatus());
@@ -530,6 +551,7 @@ public class ExecuteApiTestSuite extends Script {
 				CreateOrUpdateTestCase(apiTestCase);
 				throw new ScriptException("invalid request type : " + request.get("method"));
 			}
+
 			log.info("response status :" + response.getStatus());
           	apiTestCase.setResponseStatus((long)response.getStatus());
 			CreateOrUpdateTestCase(apiTestCase);
@@ -543,14 +565,16 @@ public class ExecuteApiTestSuite extends Script {
 				throw new ScriptException("response status " + response.getStatus());
 			}
 			cookieRegister.addCookiesFromResponse(response);
+
 			String value = response.readEntity(String.class);
 			log.info("response  :" + value);
           	apiTestCase.setResponseBody(value);
 			apiTestCase.setResponseStatus((long)response.getStatus());
 			apiTestCase.setStatus(response.getStatus() == 200 ? "SUCCESS" : "FAILED");
-			response.close();
-			jsEngine.getContext().setAttribute("req_response", value, ScriptContext.GLOBAL_SCOPE);
 			CreateOrUpdateTestCase(apiTestCase);
+
+			response.close();
+			jsEngine.getContext().setAttribute("req_response", value, ScriptContext.GLOBAL_SCOPE);			
 		}
 
 		private void CreateOrUpdateTestCase(apiTestCaseExecution apiTestCase) {
@@ -569,7 +593,7 @@ public class ExecuteApiTestSuite extends Script {
 			  }
 		}
 
-		public String replaceVars(String input) {
+		private String replaceVars(String input) {
 			StringBuffer result = new StringBuffer();
 			Matcher matcher = postmanVarPattern.matcher(input);
 			while (matcher.find()) {
@@ -586,7 +610,7 @@ public class ExecuteApiTestSuite extends Script {
 			return result.toString();
 		}
 
-		public void executeEvent(String itemName, String eventName, ArrayList<Object> events) throws ScriptException {		
+		private void executeEvent(String itemName, String eventName, ArrayList<Object> events) throws ScriptException {		
           for (Object e : events) {              
 				Map<String, Object> event = (Map<String, Object>) e;
                 //event.keySet().forEach(k->log.info(k.toString()));
