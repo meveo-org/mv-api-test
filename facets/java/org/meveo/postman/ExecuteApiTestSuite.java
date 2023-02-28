@@ -530,8 +530,6 @@ public class ExecuteApiTestSuite extends Script {
                             } catch (FileNotFoundException e) {
                                 response.close();
                                 apiTestCase.setResponseStatus((long)response.getStatus());
-                                apiTestCase.setStatus("FAILED");
-                                CreateOrUpdateTestCase(apiTestCase);
                                 throw new ScriptException("cannot read file : " + request.get("method"));
                             }
                         } else {
@@ -555,9 +553,7 @@ public class ExecuteApiTestSuite extends Script {
                                 MediaType.APPLICATION_OCTET_STREAM_TYPE); //NOTE we allow to use variables in the file src
                     } catch (FileNotFoundException e) {
                         response.close();
-                        apiTestCase.setResponseStatus((long)response.getStatus());
-                        apiTestCase.setStatus("FAILED");
-                        CreateOrUpdateTestCase(apiTestCase);
+                        apiTestCase.setResponseStatus((long)response.getStatus());                        
                         throw new ScriptException("cannot read file : " + request.get("method"));
                     }
                     entity = Entity.entity(mdo, MediaType.MULTIPART_FORM_DATA_TYPE);
@@ -584,8 +580,6 @@ public class ExecuteApiTestSuite extends Script {
             if (response == null) {
                 response.close();
                 apiTestCase.setResponseStatus((long)response.getStatus());
-                apiTestCase.setStatus("FAILED");
-                CreateOrUpdateTestCase(apiTestCase);
                 throw new ScriptException("invalid request type : " + request.get("method"));
             }
 
@@ -596,9 +590,7 @@ public class ExecuteApiTestSuite extends Script {
             jsEngine.getContext().setAttribute("req_status", response.getStatus(), ScriptContext.GLOBAL_SCOPE);
             if (response.getStatus() >= 300) {
                 response.close();				
-                apiTestCase.setResponseStatus((long)response.getStatus());
-                apiTestCase.setStatus("FAILED");
-                CreateOrUpdateTestCase(apiTestCase);
+                apiTestCase.setResponseStatus((long)response.getStatus());                
                 throw new ScriptException("response status " + response.getStatus());
             }
             cookieRegister.addCookiesFromResponse(response);
