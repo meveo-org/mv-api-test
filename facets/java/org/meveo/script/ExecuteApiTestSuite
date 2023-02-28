@@ -40,7 +40,7 @@ import org.graalvm.polyglot.HostAccess;
 
 public class ExecuteApiTestSuite extends Script {
 
-    private final static Logger log = LoggerFactory.getLogger(ConvertTestEnvironment.class);
+    private final static Logger log = LoggerFactory.getLogger(ExecuteApiTestSuite.class);
   	private CrossStorageApi crossStorageApi = getCDIBean(CrossStorageApi.class);
 	private RepositoryService repositoryService = getCDIBean(RepositoryService.class);
     private MeveoModuleService moduleService = getCDIBean(MeveoModuleService.class);
