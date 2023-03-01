@@ -86,6 +86,11 @@ public class ExecuteApiTestSuite extends Script {
 
             var collection = getPostmanCollection(code, content);
 
+            if (collection == null) {
+                result = "Can not found collection script.";
+                return;
+            }
+
             PostmanRunnerScript runner  = new PostmanRunnerScript(env, collection);
 
             runner.runScript();
@@ -110,16 +115,25 @@ public class ExecuteApiTestSuite extends Script {
     }
 
     private PostmanCollection getPostmanCollection(String collectionCode, String collectionContent) throws ParseException, IOException {
+
+        if (collectionContent == null 
+            || collectionContent.isEmpty() 
+            || collectionContent.trim().isEmpty()) {
+                
+            return getPostmanCollectionByCode(collectionCode);
+        }
+        
+
         JSONParser parser = new JSONParser();
         JSONObject json = (JSONObject) parser.parse(collectionContent);
         var jsonStr = json.toString();
         var checksum = getChecksum(jsonStr);
 
         List<PostmanCollection> currentCollections = crossStorageApi.find(PostmanCollection.class)
-                                                                    .like("code", collectionCode + "*")
+                                                                    .like("code", collectionCode + "_(*)")
                                                                     .by("contentHash", checksum)
                                                                     .getResults();
-        
+
         var collection = (currentCollections == null || currentCollections.size() == 0)
                         ? createNewCollection(collectionCode, jsonStr, checksum) 
                         : currentCollections.get(0);
@@ -128,9 +142,20 @@ public class ExecuteApiTestSuite extends Script {
 
     }
 
+    private PostmanCollection getPostmanCollectionByCode(String collectionCode) {
+        List<PostmanCollection> currentCollections = crossStorageApi.find(PostmanCollection.class)
+                                                                    .by("code", collectionCode)
+                                                                    .getResults();
+
+        return (currentCollections == null || currentCollections.size() == 0) 
+                ? null
+                :currentCollections.get(0);
+
+    }
+
     private PostmanCollection createNewCollection(String collectionCode, String collectionContent, String collectionChecksum) {
         int collectionCount = crossStorageApi.find(PostmanCollection.class)
-                                            .like("code", code + "_(*")
+                                            .like("code", code + "_(*)")
                                             .fetch("code")
                                             .getResults()
                                             .size();
