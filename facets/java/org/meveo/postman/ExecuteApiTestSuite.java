@@ -301,7 +301,7 @@ public class ExecuteApiTestSuite extends Script {
             return (ArrayList<Object>) map.get("item");
         }
 
-        public void runScript() throws BusinessException {
+        public void runScript() throws BusinessException, IOException {
             this.startTime = System.currentTimeMillis();
             this.startDate = Instant.now();
 
@@ -332,7 +332,7 @@ public class ExecuteApiTestSuite extends Script {
             return apiTestSuite;
         }
 
-        private void updateTestSuite(){
+        private void updateTestSuite() throws BusinessException, IOException {
             var status = this.totalTestcase == this.successRequest ? "SUCCESS" : "FAILED";
 
             this.testSuite.setStatus(status);
@@ -343,6 +343,8 @@ public class ExecuteApiTestSuite extends Script {
             this.testSuite.setStartDate(startDate);
             this.testSuite.setEndDate(endDate);
             this.testSuite.setDurationInMs(this.endTime - this.startTime);
+            
+            this.testSuite.setReport(generateReport());
 
             createOrUpdateTestSuite(this.testSuite);
         }
@@ -350,7 +352,7 @@ public class ExecuteApiTestSuite extends Script {
         private void createOrUpdateTestSuite(apiTestSuiteExecution apiTestSuite) {
             try {
                 String id = crossStorageApi.createOrUpdate(defaultRepo, apiTestSuite);
-                apiTestSuite.setUuid(id);                
+                apiTestSuite.setUuid(id);
             }
             catch (Exception ex){
                 throw new RuntimeException("Failed to save testing suite.", ex);
@@ -730,6 +732,48 @@ public class ExecuteApiTestSuite extends Script {
                     }
                 }
             }
+        }
+
+        private String generateReport() throws BusinessException, IOException {
+            var report = getReportTemplate();
+
+            // report.replace("{{}}", this.testSuite.get());
+            report = report.replace("{{browserTitle}}", this.testSuite.getPostmanCollection());
+            report = report.replace("{{title}}", this.testSuite.getPostmanCollection());
+            report = report.replace("{{timestamp}}", Instant.now().toString());
+            report = report.replace("{{stats.request.total}}", this.testSuite.getCaseNb().toString());
+            report = report.replace("{{failures.length}}", this.testSuite.getFailureNb().toString());
+            report = report.replace("{{#gt skippedTests.length 0}}{{skippedTests.length}}{{else}}0{{/gt}}", "0");
+
+            report = report.replace("{{collection.name}}", this.testSuite.getPostmanCollection());
+            report = report.replace("{{environment.name}}", this.testSuite.getTestEnvironment());
+
+            report = report.replace("{{duration}}", this.testSuite.getDurationInMs().toString() + "ms");            
+
+            report = report.replace("{{requests.total}}", this.testSuite.getCaseNb().toString());
+            report = report.replace("{{requests.failed}}", this.testSuite.getFailureNb().toString());
+
+            return report;
+        }
+
+        private String getReportTemplate() throws BusinessException, IOException {
+            MeveoUser user = currentUserProducer.getCurrentUser();
+            var module = moduleService.findByCode("mv-api-test");
+            File modulePath = GitHelper.getRepositoryDir(user, module.getGitRepository());
+            if (modulePath == null) {
+                throw new BusinessException("cannot load postman collection, module directory not found");
+            }
+            var templateFile = modulePath.toPath()
+                                    .resolve("facets")
+                                    .resolve("java")
+                                    .resolve("org")
+                                    .resolve("meveo")
+                                    .resolve("postman")
+                                    .resolve("dashboard-template.hbs");
+
+            var template = new String (Files.readAllBytes(templateFile));
+
+            return template;
         }
 
         public void setStopOnError(boolean stopOnError) {
