@@ -15,6 +15,7 @@ import org.meveo.service.storage.RepositoryService;
 import org.meveo.service.crm.impl.CurrentUserProducer;
 import org.meveo.service.admin.impl.MeveoModuleService;
 import org.meveo.model.customEntities.*;
+import org.meveo.model.shared.DateUtils;
 import org.meveo.model.storage.Repository;
 import org.meveo.api.persistence.CrossStorageApi;
 import org.meveo.api.exception.*;
@@ -337,7 +338,7 @@ public class ExecuteApiTestSuite extends Script {
 
             this.testSuite.setStatus(status);
             this.testSuite.setVariables(this.context);
-            this.testSuite.setFailureNb((long)this.failedTest);
+            this.testSuite.setFailureNb((long)this.failedRequest);
             this.testSuite.setSuccessNb((long)this.successRequest);
 
             this.testSuite.setStartDate(startDate);
@@ -737,21 +738,37 @@ public class ExecuteApiTestSuite extends Script {
         private String generateReport() throws BusinessException, IOException {
             var report = getReportTemplate();
 
-            // report.replace("{{}}", this.testSuite.get());
-            report = report.replace("{{browserTitle}}", this.testSuite.getPostmanCollection());
-            report = report.replace("{{title}}", this.testSuite.getPostmanCollection());
-            report = report.replace("{{timestamp}}", Instant.now().toString());
-            report = report.replace("{{stats.request.total}}", this.testSuite.getCaseNb().toString());
-            report = report.replace("{{failures.length}}", this.testSuite.getFailureNb().toString());
-            report = report.replace("{{#gt skippedTests.length 0}}{{skippedTests.length}}{{else}}0{{/gt}}", "0");
+            var skipedTest = this.testSuite.getCaseNb() - this.testSuite.getSuccessNb() - this.testSuite.getFailureNb();
+            
+            report = report.replace("{{#with summary}}", "")
+                            .replace("{{browserTitle}}", this.testSuite.getPostmanCollection())
+                            .replace("{{title}}", "Summary testing collection " + this.testSuite.getPostmanCollection())
+                            .replace("{{timestamp}}", DateUtils.formatDateWithPattern(Instant.now(),"E, dd MMM yyyy HH:mm:ss"))
+                            .replace("{{stats.requests.total}}", this.testSuite.getCaseNb().toString())
+                            .replace("{{failures.length}}", this.testSuite.getFailureNb().toString())
+                            .replace("{{#gt skippedTests.length 0}}{{skippedTests.length}}{{else}}0{{/gt}}", String.valueOf(skipedTest))
 
-            report = report.replace("{{collection.name}}", this.testSuite.getPostmanCollection());
-            report = report.replace("{{environment.name}}", this.testSuite.getTestEnvironment());
+                            .replace("{{stats.iterations.total}}", "1")
+                            .replace("{{totalTests stats.assertions.total skippedTests.length}}", this.testSuite.getSuccessNb().toString())
+                            .replace("{{stats.assertions.failed}}", this.testSuite.getFailureNb().toString())
 
-            report = report.replace("{{duration}}", this.testSuite.getDurationInMs().toString() + "ms");            
+                            .replace("{{#gt failures.length 0}}bg-danger{{else}}bg-success{{/gt}}", this.testSuite.getFailureNb() > 0 ? "bg-danger" : "bg-success")
+                            .replace("{{#gt stats.assertions.total 999 }}4{{else}}1{{/gt}}", this.testSuite.getCaseNb() > 999 ? "4" : "1")
 
-            report = report.replace("{{requests.total}}", this.testSuite.getCaseNb().toString());
-            report = report.replace("{{requests.failed}}", this.testSuite.getFailureNb().toString());
+                            .replace("{{#gt skippedTests.length 0}}bg-warning{{else}}bg-success{{/gt}}", "bg-success")
+
+                            .replace("{{collection.name}}", this.testSuite.getPostmanCollection())
+                            .replace("{{environment.name}}", this.testSuite.getTestEnvironment())
+
+                            .replace("{{duration}}", this.testSuite.getDurationInMs().toString() + "ms")
+                            .replace("{{responseAverage}}", "")
+
+                            .replace("{{requests.total}}", this.testSuite.getCaseNb().toString())
+                            .replace("{{requests.failed}}", this.testSuite.getFailureNb().toString())
+                            .replace("{{prerequestScripts.total}}", "0")
+                            .replace("{{prerequestScripts.failed}}", "0")
+                            .replace("{{testScripts.total}}", "1")
+                            .replace("{{testScripts.failed}}", this.testSuite.getStatus() == "SUCCESS" ? "0" : "1");
 
             return report;
         }

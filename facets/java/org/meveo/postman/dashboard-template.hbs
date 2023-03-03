@@ -461,32 +461,29 @@ body.theme-light code {
                 <span class="slider round"></span>
             </label>
             <label>Dark</label>
-        </div>
-        {{#with summary}}
+        </div>        
         <div class="card">
         <div class="card-header">
-            <ul class="nav nav-pills mb-3 nav-justified" id="pills-tab" role="tablist">
-            <li class="nav-item bg-info active" data-toggle="tooltip" title="Click to view the Summary">
-                <a class="nav-link text-white" id="pills-summary-tab" data-toggle="pill" href="#pills-summary" role="tab" aria-controls="pills-summary" aria-selected="true">Summary</a>
+            <ul class="nav nav-pills mb-3 nav-justified">
+            <li class="nav-item bg-info active">
+                <a class="nav-link text-white" aria-controls="pills-summary" aria-selected="true">Summary</a>
             </li>
-            <li class="nav-item bg-success" data-toggle="tooltip" title="Click to view the Requests">
-                <a class="nav-link text-white" id="pills-requests-tab" data-toggle="pill" href="#pills-requests" role="tab" aria-controls="pills-requests" aria-selected="false">Total Requests <span class="badge badge-light">{{stats.requests.total}}</span></a>
+            <li class="nav-item bg-success">
+                <a class="nav-link text-white" aria-controls="pills-requests" aria-selected="false">Total Requests <span class="badge badge-light">{{stats.requests.total}}</span></a>
             </li>
-            <li class="nav-item bg-danger" data-toggle="tooltip" title="Click to view the Failed Tests">
-                <a class="nav-link text-white" id="pills-failed-tab" data-toggle="pill" href="#pills-failed" role="tab" aria-controls="pills-failed" aria-selected="false">Failed Tests <span class="badge badge-light">{{failures.length}}</span></a>
+            <li class="nav-item bg-danger">
+                <a class="nav-link text-white" aria-controls="pills-failed" aria-selected="false">Failed Tests <span class="badge badge-light">{{failures.length}}</span></a>
             </li>
-            <li class="nav-item bg-warning" data-toggle="tooltip" title="Click to view the Skipped Tests">
-                <a class="nav-link text-white" id="pills-skipped-tab" data-toggle="pill" href="#pills-skipped" role="tab" aria-controls="pills-skipped" aria-selected="false">Skipped Tests <span class="badge badge-light">{{#gt skippedTests.length 0}}{{skippedTests.length}}{{else}}0{{/gt}}</span></a>
+            <li class="nav-item bg-warning">
+                <a class="nav-link text-white" aria-controls="pills-skipped" aria-selected="false">Skipped Tests <span class="badge badge-light">{{#gt skippedTests.length 0}}{{skippedTests.length}}{{else}}0{{/gt}}</span></a>
             </li>
-            </ul>
-        {{/with}}
+            </ul>        
         <div class="tab-content" id="pills-tabContent">
             <div class="tab-pane fade show active" id="pills-summary" role="tabcard" aria-labelledby="pills-summary-tab">
 <div class="row">
   <div class="col-md-9 col-lg-12 main">
    <h1 class="display-{{titleSize}} text-center">{{title}}</h1>
    <h5 class="text-center">{{timestamp}}</h5>
-{{#with summary}}
    <div class="row">
     <div class="col-lg-3 col-md-6">
      <div class="card text-white card-success">
@@ -535,124 +532,18 @@ body.theme-light code {
    </div>
    <hr>
     <div class="row">
-    <div class="col">
-        <div class="row">
-        <div class="col-sm-12 mb-3">
-            <div class="card border-info">
-                <div class="card-body">
-                <h5 class="card-title text-uppercase text-white text-center bg-info">File Information</h5>
-                <span><i class="fas fa-file-code"></i></span><strong> Collection:</strong> {{collection.name}}<br>
-                {{/with}}
-                {{#if folders}}<span><i class="fas fa-folder"></i></span><strong> Specified Folders:</strong> {{folders}}<br>{{/if}}
-                {{#with summary}}
-                {{#if environment.name}}<span><i class="fas fa-file-code"></i></span><strong> Environment:</strong> {{environment.name}}<br>{{/if}}
-                </div>
-            </div>
-        </div>
-        </div>
-        {{#if @root.showGlobalData}}
-        {{#if globals.values.members.length}}
-         <div class="row">
-            <div class="col-sm-12 mb-3">
-                <div class="card-deck">
-                <div class="card border-info" style="width: 50rem;">
-                    <h5 class="card-header bg-info text-center text-uppercase" style="height: 45px;">
-                        <a data-toggle="collapse" href="#global-values" aria-expanded="true" aria-controls="collapse-example" id="global-heading" class="env-heading collapsed d-block" style="color: white;">
-                            <i class="float-lg-right fa fa-chevron-down"></i>
-                                Global Variables
-                            </a>
-                    </h5>
-                    <div id="global-values" class="collapse" aria-labelledby="global-heading">
-                    <div class="card-body">
-
-                        <div class="table-responsive dyn-height">
-                            <table class="table table-bordered">
-                            <thead class="thead-light text-center"><tr><th>Variable Name</th><th>Variable Value</th></tr></thead>
-                                <tbody>
-                                    {{#each globals.values.members}}
-                                    {{#isNotIn key @root.skipGlobalVars}}
-                                    <tr>
-                                        <td class="text-nowrap">{{key}}</td>
-                                        <td>{{value}}</td>
-                                    </tr>
-                                    {{/isNotIn}}
-                                    {{/each}}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
-        {{/if}}
-        {{/if}}
-        {{#if @root.showEnvironmentData}}
-        {{#if environment.values.members.length}}
-         <div class="row">
-            <div class="col-sm-12 mb-3">
-                <div class="card-deck">
-                <div class="card border-info" style="width: 50rem;">
-                    <h5 class="card-header bg-info text-center text-uppercase" style="height: 45px;">
-                        <a data-toggle="collapse" href="#environment-values" aria-expanded="true" aria-controls="collapse-example" id="environment-heading" class="env-heading collapsed d-block" style="color: white;">
-                            <i class="float-lg-right fa fa-chevron-down"></i>
-                                Environment Variables
-                            </a>
-                    </h5>
-                    <div id="environment-values" class="collapse" aria-labelledby="environment-heading">
-                    <div class="card-body">
-
-                        <div class="table-responsive dyn-height">
-                            <table class="table table-bordered">
-                            <thead class="thead-light text-center"><tr><th>Variable Name</th><th>Variable Value</th></tr></thead>
-                                <tbody>
-                                    {{#each environment.values.members}}
-                                    {{#isNotIn key @root.skipEnvironmentVars}}
-                                    <tr>
-                                        <td class="text-nowrap">{{key}}</td>
-                                        <td>{{value}}</td>
-                                    </tr>
-                                    {{/isNotIn}}
-                                    {{/each}}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
-        {{/if}}
-        {{/if}}
-        {{#if collection.description}}
-        <div class="row">
-        <div class="col-sm-12 mb-3">
-            <div class="card border-info">
-                <div class="card-body">
-                <h5 class="card-title text-uppercase text-white text-center bg-info">Collection Description</h5>
-                <div class="dyn-height">
-                    <code class="renderMarkdown">{{collection.description}}</code>
-                </div>
-                </div>
-            </div>
-        </div>
-        </div>
-        {{/if}}
+    <div class="col">        
         <div class="row">
         <div class="col-sm-12 mb-3">
             <div class="card border-info">
                 <div class="card-body">
                 <h5 class="card-title text-uppercase text-white text-center bg-info">Timings and Data</h5>
-                <span><i class="fas fa-stopwatch"></i></span><strong> Total run duration:</strong> {{duration}}<br>
-                <span><i class="fas fa-database"></i></span><strong> Total data received:</strong> {{responseTotal}}<br>
+                <span><i class="fas fa-stopwatch"></i></span><strong> Total run duration:</strong> {{duration}}<br>                
                 <span><i class="fas fa-stopwatch"></i></span><strong> Average response time:</strong> {{responseAverage}}<br>
                 </div>
             </div>
         </div>
-        </div>
-    {{/with}}
+        </div>    
         <div class="row">
         <div class="col-sm-12 mb-3">
             <div class="table-responsive">
@@ -664,8 +555,7 @@ body.theme-light code {
                         <th class="text-uppercase">Failed</th>
                     </tr>
                 </thead>
-                <tbody>
-                {{#with summary.stats}}
+                <tbody>                
                     <tr>
                         <td>Requests</td>
                         <td class="text-center">{{requests.total}}</td>
@@ -681,8 +571,8 @@ body.theme-light code {
                         <td class="text-center">{{testScripts.total}}</td>
                         <td class="text-center">{{testScripts.failed}}</td>
                     </tr>
-                    {{/with}}
-                    {{#with summary}}
+                    
+                    
                     <tr class="{{#gt failures.length 0}}table-danger{{/gt}}">
                         <td>Assertions</td>
                         <td class="text-center">{{totalTests stats.assertions.total skippedTests.length}}</td>
@@ -693,7 +583,7 @@ body.theme-light code {
                         <td class="text-center">{{#gt skippedTests.length 0}}{{skippedTests.length}}{{else}}0{{/gt}}</td>
                         <td class="text-center">-</td>
                     </tr>
-                    {{/with}}
+                    
                 </tbody>
             </table>
             </div>
@@ -705,545 +595,18 @@ body.theme-light code {
   </div>
  </div>
         </div>
-            <div class="tab-pane fade" id="pills-failed" role="tabcard" aria-labelledby="pills-failed-tab">
-                <button id="topOfFailuresScreen" class="btn btn-outline-success btn-sm backToTop" onclick="topFunction()">Go To Top</button>
-
-                {{#if summary.failures.length}}
-                    <div class="btn-group float-right" role="group" aria-label="Button Group">
-                        <button id="openAllFailed" class="btn btn-outline-success btn-sm float-right" style="text-align: center; width: 185px;">Expand All Failed Tests</button>
-                    </div>
-                    <br>
-                    <br>
-
-                    {{#with summary}}
-                    <div class="alert alert-danger text-uppercase text-center">
-                        <h4>Showing {{failures.length}} {{#gt failures.length 1}}Failures{{else}}Failure{{/gt}}</h4>
-                    </div>
-                    {{/with}}
-                    {{#each summary.failures}}
-                    <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
-                        <div class="card border-danger">
-                            <div class="card-header bg-danger">
-                                <a data-toggle="collapse" href="#" data-target="#fails-collapse-{{error.id}}" aria-expanded="false" aria-controls="collapse" id="fails-{{error.id}}" class="collapsed text-white z-block">
-                                    Iteration {{inc cursor.iteration}} - {{error.name}} - {{parent.name}} - {{source.name}} <i class="float-lg-right fa fa-chevron-down" style="padding-top:5px;"></i>
-                                </a>
-                            </div>
-                            <div id="fails-collapse-{{error.id}}" class="collapse" aria-labelledby="fails-{{error.id}}">
-                            <div class="card-body">
-                                <h5 {{#if @root.showMarkdownLinks}}class="renderMarkdown"{{/if}}><strong>Failed Test:</strong> {{error.test}}</h5>
-                            <hr>
-                            <h5 class="card-title text-uppercase text-white text-center bg-danger">Assertion Error Message</h5>
-                            <div>
-                                <pre><code {{#if @root.showMarkdownLinks}}class="renderMarkdown"{{/if}}>{{error.message}}</code></pre>
-                            </div>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                    {{/each}}
-                {{else}}
-                <div class="alert alert-success text-uppercase text-center">
-                     <br><br><h1 class="text-center">There are no failed tests <span><i class="far fa-thumbs-up"></i></span></h1><br><br>
-                </div>
-                {{/if}}
-            </div>
-
-            <div class="tab-pane fade" id="pills-skipped" role="tabcard" aria-labelledby="pills-skipped-tab">
-                <button id="topOfSkippedScreen" class="btn btn-outline-success btn-sm backToTop" onclick="topFunction()">Go To Top</button>
-
-                {{#if summary.skippedTests.length}}
-                    <div class="btn-group float-right" role="group" aria-label="Button Group">
-                        <button id="openAllSkipped" class="btn btn-outline-success btn-sm float-right" style="text-align: center; width: 185px;">Expand All Skipped Tests</button>
-                    </div>
-                    <br>
-                    <br>
-
-                    {{#with summary}}
-                    <div class="alert alert-warning text-uppercase text-center">
-                        <h4>Showing {{skippedTests.length}} Skipped {{#gt skippedTests.length 1}}Tests{{else}}Test{{/gt}}</h4>
-                    </div>
-                    {{/with}}
-                    {{#each summary.skippedTests}}
-                    <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
-                        <div class="card border-warning">
-                            <div class="card-header bg-warning text-white">
-                                <a data-toggle="collapse" href="#" data-target="#skipped-collapse-{{cursor.ref}}" aria-expanded="false" aria-controls="collapse" id="skipped-{{cursor.ref}}" class="collapsed text-white z-block">
-                                    Iteration {{inc cursor.iteration}} - {{assertion}} <i class="float-lg-right fa fa-chevron-down" style="padding-top:5px;"></i>
-                                </a>
-                            </div>
-                            <div id="skipped-collapse-{{cursor.ref}}" class="collapse" aria-labelledby="skipped-{{cursor.ref}}">
-                            <div class="card-body">
-                                <h5><strong>Request Name:</strong> {{item.name}}</h5>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                    {{/each}}
-                {{else}}
-                <div class="alert alert-success text-uppercase text-center">
-                    <br><br><h1 class="text-center">There are no skipped tests <span><i class="far fa-thumbs-up"></i></span></h1><br><br>
-                </div>
-                {{/if}}
-            </div>
-            <div class="tab-pane fade" id="pills-requests" role="tabcard" aria-labelledby="pills-requests-tab">
-
-            <button id="topOfRequestsScreen" class="btn btn-outline-success btn-sm backToTop" onclick="topFunction()">Go To Top</button>
-
-            <div class="btn-group float-right" role="group" aria-label="Button Group">
-                {{#if summary.failures.length}}
-                <button id="showOnlyFailures" class="btn btn-outline-success btn-sm float-right" style="text-align: center; width:160px;">Show Failed Iterations</button>
-                {{/if}}
-                <button id="openAll" class="btn btn-outline-success btn-sm float-right" style="text-align: center; width: 140px;">Expand Folders</button>
-                <button id="openAllRequests" class="btn btn-outline-success btn-sm float-right" style="text-align: center; width: 140px;">Expand Requests</button>
-            </div>
-
-    <div class="text-uppercase" id="execution-menu">
-        {{#with summary}}
-        <h5>{{stats.iterations.total}} {{#gt stats.iterations.total 1}}Iterations{{else}}Iteration{{/gt}} available to view</h5>
-        {{#gt stats.iterations.total 18}}<input class="form-control w-25" style="margin-bottom: 5px;" id="filterInput" type="number" min="1" placeholder="Filter Iterations">{{/gt}}
-        {{/with}}
-        <nav class="table-responsive">
-        <ul class="nav {{#gt summary.stats.iterations.total 18}}nav-tabs{{else}}single-line-tabs{{/gt}}" id="iterationList">
-        </ul>
-        </nav>
-    </div>
-    <h6 class="text-uppercase text-muted" id="iterationSelected" style="padding-top: 10px;"></h6>
-	<div class="tab-content" id="execution-data">
-{{#each aggregations}}
-    {{#isNotIn parent.name @root.skipFolders}}
-    {{#if parent.name }}
-        <div class="alert alert-dark text-uppercase text-center iteration-{{parent.iteration}}">
-        <a data-toggle="collapse" href="#" data-target="#folder-collapse-{{parent.id}}-iteration-{{parent.iteration}}" aria-expanded="false" aria-controls="collapse" id="folder-{{parent.id}}-iteration-{{parent.iteration}}" class="collapsed text-dark z-block">
-        <i class="fas fa-info-circle float-left resultsInfoPass" {{#each executions}}{{#if cumulativeTests.failed}} style="color: #c24a3f; padding-top: 4px;"{{/if}}{{/each}}></i>
-            {{parent.name}} - {{executions.length}} {{#gt executions.length 1}}Requests{{else}}Request{{/gt}} in the folder<i class="float-lg-right fa fa-chevron-down" style="padding-top: 5px;"></i>
-        </a>
-        </div>
-        <div id="folder-collapse-{{parent.id}}-iteration-{{parent.iteration}}" class="collapse" aria-labelledby="folder-{{parent.id}}">
-        {{> aggregations}}
-        </div>
-        {{else}}
-        {{> aggregations}}
-    {{/if}}
-    {{/isNotIn}}
-{{/each}}
-        </div>
+    <h6 class="text-uppercase text-muted" id="iterationSelected" style="padding-top: 10px;"></h6>	
     </div>
     </div>
     </div>
     </div>
     </div>
-
-{{#*inline "aggregations"}}
-{{#isNotIn parent.name @root.skipFolders}}
-{{#if @root.showFolderDescription}}
-{{#if parent.description.content}}
-
-    <div class="row">
-        <div class="col-sm-12 mb-3">
-        <div class="card-deck">
-            <div class="card border-info" style="width: 50rem;">
-                <div class="card-body">
-                <h5 class="card-title text-uppercase text-white text-center bg-info">Folder Description</h5>
-                    <div class="dyn-height">
-                        <code class="renderMarkdown">{{parent.description.content}}</code>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-    </div>
-{{/if}}
-{{/if}}
-{{#each executions}}
-{{#isNotIn item.name @root.skipRequests}}
-    <div id="folder-{{cursor.ref}}" class="card-deck iteration-{{cursor.iteration}}">
-    <div class="row iteration-{{cursor.iteration}}">
-        <div class="col-sm-12 mb-3 iteration-{{cursor.iteration}}">
-        <div class="card iteration-{{cursor.iteration}}">
-            <div class="card-header {{#if cumulativeTests.failed}} bg-danger{{else}} bg-success{{/if}} iteration-{{cursor.iteration}}">
-                <a data-toggle="collapse" href="#" data-target="#collapse-{{cursor.ref}}" aria-expanded="false" aria-controls="collapse" id="requests-{{cursor.ref}}" class="collapsed text-white z-block">
-            Iteration: {{inc cursor.iteration}} - {{item.name}} <i class="float-lg-right fa fa-chevron-down" style="padding-top: 5px;"></i>
-        </a>
-        {{#if cumulativeTests.skipped}}
-        <span class="badge badge-warning text-white text-uppercase">{{cumulativeTests.skipped}} Skipped {{#gt cumulativeTests.skipped 1}}Tests{{else}}Test{{/gt}}</span>
-        {{/if}}
-            </div>
-            <div id="collapse-{{cursor.ref}}" class="collapse" aria-labelledby="requests-{{cursor.ref}}">
-            <div class="card-body">
-                {{#with request}}
-                {{#if description.content}}
-                <div class="row">
-                    <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
-                        <div class="card border-info" style="width: 50rem;">
-                            <div class="card-body">
-                            <h5 class="card-title text-uppercase text-white text-center bg-info">Request Description</h5>
-                                <div class="dyn-height">
-                                    <code class="renderMarkdown">{{description.content}}</code>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                {{/if}}
-                {{/with}}
-                <div class="row">
-                    <div class="col-sm-12 mb-3">
-                        <div class="card-deck">
-                        <div class="card border-info" style="width: 50rem;">
-                            <div class="card-body">
-                            <h5 class="card-title text-uppercase text-white text-center bg-info">Request Information</h5>
-                            <span><i class="fas fa-info-circle"></i></span><strong> Request Method:</strong> <span class="badge-outline-success badge badge-success"> {{request.method}}</span><br>
-                            <span><i class="fas fa-info-circle"></i></span><strong> Request URL:</strong> <a href="{{request.url}}" target="_blank">{{request.url}}</a><br>
-                            </div>
-                        </div>
-                        <div class="card border-info" style="width: 50rem;">
-                            <div class="card-body">
-                            <h5 class="card-title text-uppercase text-white text-center bg-info">Response Information</h5>
-                            <span><i class="fas fa-info-circle"></i></span><strong> Response Code:</strong> <span class="float-right badge-outline badge badge-success"> {{response.code}} - {{response.status}}</span><br>
-                            <span><i class="fas fa-stopwatch"></i></span><strong> Mean time per request:</strong> <span class="float-right badge-outline badge badge-success"> {{mean.time}}</span><br>
-                            <span><i class="fas fa-database"></i></span><strong> Mean size per request:</strong> <span class="float-right badge-outline badge badge-success"> {{mean.size}}</span><br>
-                            <hr>
-                            <h5 class="card-title text-uppercase text-white text-center bg-info">Test Pass Percentage</h5>
-                            <div>
-                                {{#if assertions.length}}
-                                <div class="progress" style="height: 40px;">
-                                    <div class="progress-bar {{#if cumulativeTests.failed}} bg-danger{{else}} bg-success{{/if}}" style="width: 100%" role="progressbar">
-                                    <h5 style="padding-top:5px;"><strong>{{#gte cumulativeTests.passed 1}}{{percent cumulativeTests.passed cumulativeTests.failed}} %{{else}}0 %{{/gte}}</strong></h5>
-                                    </div>
-                                </div>
-                                {{else}}
-                                <div class="progress" style="height: 40px;">
-                                    <div class="progress-bar bg-success" style="width: 100%" role="progressbar">
-                                    <h5 class="text-uppercase text-white text-center" style="padding-top:5px;"><strong>No Tests for this request</strong></h5>
-                                    </div>
-                                </div>
-                                {{/if}}
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                {{#with request}}
-                {{#unless @root.omitHeaders}}
-                {{#unless @root.skipSensitiveData}}
-                <div class="row">
-                    <div class="col-sm-12 mb-3">
-                        <div class="card-deck">
-                        <div class="card border-info" style="width: 50rem;">
-                            <div class="card-body">
-                                <h5 class="card-title text-uppercase text-white text-center bg-info">Request Headers</h5>
-                                {{#if headers}}
-                                <div class="table-responsive">
-                                    <table class="table table-bordered">
-                                    <thead class="thead-light text-center"><tr><th>Header Name</th><th>Header Value</th></tr></thead>
-                                        <tbody>
-                                            {{#each headers.members}}
-                                            {{#isNotIn key @root.skipHeaders}}
-                                            <tr>
-                                                <td class="text-nowrap">{{key}}</td>
-                                                <td class="text-wrap">{{value}}</td>
-                                            </tr>
-                                            {{/isNotIn}}
-                                            {{/each}}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                {{/if}}
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                </div>
-                {{/unless}}
-                {{/unless}}
-                {{/with}}
-                {{#unless @root.skipSensitiveData}}
-                {{#unless @root.omitRequestBodies}}
-                {{#isNotIn item.name @root.hideRequestBody}}
-                {{#with request}}
-                {{#if body.raw}}
-                <div class="row">
-                <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
-                    <div class="card border-info" style="width: 50rem;">
-                        <div class="card-body">
-                            <h5 class="card-title text-uppercase text-white text-center bg-info">Request Body</h5>
-                                <div class="dyn-height">
-                                    <pre><code id="copyReqText-{{@key}}" class="prettyPrint">{{body.raw}}</code></pre>
-                                </div>
-                                <div class="card-footer">
-                                    <button class="btn btn-outline-secondary btn-sm copyButton" type="button" data-clipboard-action="copy" data-clipboard-target="#copyReqText-{{@key}}">Copy to Clipboard</button>
-                                </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-                {{/if}}
-                {{/with}}
-                {{/isNotIn}}
-                {{/unless}}
-                {{/unless}}
-                {{#unless @root.skipSensitiveData}}
-                {{#unless @root.omitRequestBodies}}
-                {{#isNotIn item.name @root.hideRequestBody}}
-                {{#with request}}
-                {{#if body.formdata.members}}
-                    <div class="row">
-                        <div class="col-sm-12 mb-3">
-                            <div class="card-deck">
-                                <div class="card border-info" style="width: 50rem;">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-uppercase text-white text-center bg-info">Request Body</h5>
-                                        <div class="dyn-height">
-                                            <pre><code id="copyReqText-{{@key}}" class="prettyPrint">{{formdata body.formdata.members}}</code></pre>
-                                        </div>
-                                        <div class="card-footer">
-                                            <button class="btn btn-outline-secondary btn-sm copyButton" type="button" data-clipboard-action="copy" data-clipboard-target="#copyReqText-{{@key}}">Copy to Clipboard</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {{/if}}
-                {{/with}}
-                {{/isNotIn}}
-                {{/unless}}
-                {{/unless}}
-                {{#unless @root.skipSensitiveData}}
-                {{#unless @root.omitRequestBodies}}
-                {{#isNotIn item.name @root.hideRequestBody}}
-                {{#with request}}
-                {{#if body.urlencoded.members}}
-                    <div class="row">
-                        <div class="col-sm-12 mb-3">
-                            <div class="card-deck">
-                                <div class="card border-info" style="width: 50rem;">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-uppercase text-white text-center bg-info">Request Body</h5>
-                                        <div class="dyn-height">
-                                            <pre><code id="copyReqText-{{@key}}" class="prettyPrint">{{formdata body.urlencoded.members}}</code></pre>
-                                        </div>
-                                        <div class="card-footer">
-                                            <button class="btn btn-outline-secondary btn-sm copyButton" type="button" data-clipboard-action="copy" data-clipboard-target="#copyReqText-{{@key}}">Copy to Clipboard</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {{/if}}
-                {{/with}}
-                {{/isNotIn}}
-                {{/unless}}
-                {{/unless}}
-                {{#unless @root.skipSensitiveData}}
-                {{#unless @root.omitRequestBodies}}
-                {{#isNotIn item.name @root.hideRequestBody}}
-                {{#with request}}
-                {{#if body.graphql}}
-                <div class="row">
-                <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
-                    <div class="card border-info" style="width: 50rem;">
-                        <div class="card-body">
-                            <h5 class="card-title text-uppercase text-white text-center bg-info">Request Body</h5>
-                                <div class="dyn-height">
-                                    <pre><code id="copyReqText-{{@key}}" class="prettyPrint">{{body.graphql.query}}</code></pre>
-                                </div>
-                                <div class="card-footer">
-                                    <button class="btn btn-outline-secondary btn-sm copyButton" type="button" data-clipboard-action="copy" data-clipboard-target="#copyReqText-{{@key}}">Copy to Clipboard</button>
-                                </div>
-                                {{#if body.graphql.variables }}
-                                <h6 class="card-title text-uppercase text-white text-center bg-info">Graphql Variables</h6>
-                                <div class="dyn-height">
-                                    <pre><code id="copyReqText-{{@key}}" class="prettyPrint">{{body.graphql.variables}}</code></pre>
-                                </div>
-                                {{/if}}
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-                {{/if}}
-                {{/with}}
-                {{/isNotIn}}
-                {{/unless}}
-                {{/unless}}
-                {{#unless @root.omitHeaders}}
-                {{#unless @root.skipSensitiveData}}
-                <div class="row">
-                <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
-                    <div class="card border-info" style="width: 50rem;">
-                        <div class="card-body">
-                            <h5 class="card-title text-uppercase text-white text-center bg-info">Response Headers</h5>
-                            {{#if response.header}}
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                <thead class="thead-light text-center"><tr><th>Header Name</th><th>Header Value</th></tr></thead>
-                                    <tbody>
-                                        {{#each response.header}}
-                                        {{#isNotIn key @root.skipHeaders}}
-                                        <tr>
-                                            <td class="text-nowrap">{{key}}</td>
-                                            <td class="text-wrap">{{value}}</td>
-                                        </tr>
-                                        {{/isNotIn}}
-                                        {{/each}}
-                                    </tbody>
-                                </table>
-                            </div>
-                            {{/if}}
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-                {{/unless}}
-                {{/unless}}
-                {{#unless @root.skipSensitiveData}}
-                {{#unless @root.omitResponseBodies}}
-                {{#isNotIn item.name @root.hideResponseBody}}
-                <div class="row">
-                <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
-                    <div class="card border-info" style="width: 50rem;">
-                        <div class="card-body">
-                            <h5 class="card-title text-uppercase text-white text-center bg-info">Response Body</h5>
-                            {{#if response.body}}
-                                <div class="dyn-height">
-                                        <pre><code id="copyText-{{item.id}}" class="prettyPrint">{{response.body}}</code></pre>
-                                </div>
-                                <div class="card-footer">
-                                    <button class="btn btn-outline-secondary btn-sm copyButton" type="button" data-clipboard-action="copy" data-clipboard-target="#copyText-{{item.id}}">Copy to Clipboard</button>
-                                </div>
-                            {{else}}
-                            <h5 class="alert alert-success text-uppercase text-center">No Response Body for this request</h5>
-                            {{/if}}
-                        </div>
-                    </div>
-                    </div>
-                    </div>
-                </div>
-                {{/isNotIn}}
-                {{/unless}}
-                {{/unless}}
-                {{#if consoleLogs.length}}
-                <div class="row">
-                <div class="col-sm-12 mb-3">
-                    <div class="card-deck">
-                    <div class="card border-info" style="width: 50rem;">
-                        <div class="card-body">
-                            <h5 class="card-title text-uppercase text-white text-center bg-info">Console Logs</h5>
-                            <div class="dyn-height">
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                <thead class="thead-light text-center"><tr><th>Log Messages</th></tr></thead>
-                                    <tbody>
-                                        {{#each consoleLogs}}
-                                        <tr>
-                                            <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;"><pre><code class="prettyPrint">{{#each messages}}{{this}}{{/each}}</code></pre></td>
-                                        </tr>
-                                        {{/each}}
-                                    </tbody>
-                                </table>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                </div>
-                {{/if}}
-                <div class="row">
-                    <div class="card border-info">
-                        <div class="card-body">
-                        <h5 class="card-title text-uppercase text-white text-center bg-info">Test Information</h5>
-                            {{#if assertions.length}}
-                            <div class="table-responsive text-nowrap">
-                                <table class="datatable table table-hover">
-                                <thead><tr class="text-center"><th>Name</th><th>Passed</th><th>Failed</th><th>Skipped</th></tr></thead>
-                                    <tbody>
-                                        {{#each assertions}}
-                                        <tr {{#if @root.showMarkdownLinks}}{{/if}}>
-                                            <td {{#if @root.showMarkdownLinks}}class="renderMarkdown"{{/if}}>{{this.name}}</td>
-                                            <td class="text-center {{#if this.passed}}bg-success{{/if}}">{{this.passed}}</td>
-                                            <td class="text-center {{#if this.failed}}bg-danger{{/if}}">{{this.failed}}</td>
-                                            <td class="text-center {{#if this.skipped}}bg-warning{{/if}}">{{this.skipped}}</td>
-                                        </tr>
-                                        {{/each}}
-                                    </tbody>
-                                    <tfoot>
-                                        <tr class="bg-light">
-                                            <td><strong>Total</strong></td>
-                                            <td class="text-center">{{cumulativeTests.passed}}</td>
-                                            <td class="text-center">{{cumulativeTests.failed}}</td>
-                                            <td class="text-center">{{cumulativeTests.skipped}}</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
-                            <div class="row {{#lte cumulativeTests.failed 0}}d-none{{/lte}}">
-                            <div class="col-sm-12 mb-3">
-                                <div class="card-deck">
-                                <div class="card border-danger" style="width: 50rem;">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-uppercase text-white text-center bg-danger">Test {{#lte cumulativeTests.failed 1}}Failure{{else}}Failures{{/lte}}</h5>
-                                        <div class="table-responsive">
-                                            <table class="table table-hover">
-                                            <thead><tr class="text-nowrap"><th>Test Name</th><th>Assertion Error</th></tr></thead>
-                                                <tbody>
-                                                    {{#each assertions}}
-                                                    {{#isTheSame testFailure.test this.name}}
-                                                    <tr>
-                                                        <td class="w-45 text-nowrap {{#if @root.showMarkdownLinks}}renderMarkdown{{/if}}">{{testFailure.test}}</td>
-                                                        <td class="w-55"><pre><code {{#if @root.showMarkdownLinks}}class="renderMarkdown"{{/if}}>{{testFailure.message}}</code></pre></td>
-                                                    </tr>
-                                                    {{/isTheSame}}
-                                                    {{/each}}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                            {{else}}
-                            <h5 class="alert alert-success text-uppercase text-center">No Tests for this request</h5>
-                            {{/if}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            </div>
-        </div>
-        </div>
-    </div>
-    </div>
-{{/isNotIn}}
-{{/each}}
-{{/isNotIn}}
-{{/inline}}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.7.1/remarkable.min.js"></script>
-{{#eq noSyntaxHighlighting false}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
-{{/eq}}
 
 <!-- Set slider initial position depending on the localstorage state -->
 
@@ -1577,9 +940,9 @@ window.onload = function () {
     elem.style.display = 'block';
   });
 
-  {{#with summary}} {{#with stats}}
+   {{#with stats}}
   let totalIterations = {{iterations.total}};
-  {{/with}} {{/with}}
+   
 
   let menu = document.querySelector('#execution-menu .nav');
 
