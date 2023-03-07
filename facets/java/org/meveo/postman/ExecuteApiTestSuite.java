@@ -675,7 +675,7 @@ public class ExecuteApiTestSuite extends Script {
                 if (context.containsKey(var)) {
                     replacement = context.get(var).toString();
                 }
-                matcher.appendReplacement(result, replacement);
+                matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
                 log.debug("replaced :" + matcher.group(0) + " by " + replacement);
             }
             matcher.appendTail(result);
