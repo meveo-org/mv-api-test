@@ -573,7 +573,7 @@ public class ExecuteApiTestSuite extends Script {
                     entity = Entity.entity(mdo, MediaType.MULTIPART_FORM_DATA_TYPE);
                 } else if ("raw".equals(body.get("mode"))) {
                     var rawBody = replaceVars((String) body.get("raw"));
-                    var language = (String)((Map<String, Object>)((Map<String, Object>)body.get("options")).get("raw")).get("language");
+                    var language = getLanguageOfRawRequestBody(body);
                     switch(language) {
                         case "text":
                             entity = Entity.text(rawBody);
@@ -653,6 +653,16 @@ public class ExecuteApiTestSuite extends Script {
             response.close();
             jsEngine.getContext().setAttribute("req_response", value, ScriptContext.GLOBAL_SCOPE);			
         }
+
+        private String getLanguageOfRawRequestBody(Map<String, Object> body) {
+            var language = "json";
+            try {
+                language = (String)((Map<String, Object>)((Map<String, Object>)body.get("options")).get("raw")).get("language");
+            }
+            catch (Exception ex) {}
+
+            return language;
+        }
         
         private apiTestCaseExecution createNewApiTestCase(String testCaseName) {
 
@@ -669,6 +679,7 @@ public class ExecuteApiTestSuite extends Script {
 
             try {
                 log.info( new StringBuilder("apiTestCase:{responseStatus=").append(apiTestCase.getResponseStatus()).append(", ")
+                            .append("status=").append(apiTestCase.getStatus()).append(", ")
                             .append("methodType=").append(apiTestCase.getMethod()).append(", ")
                             .append("testRequestId=").append(apiTestCase.getUuid()).append(", ")
                             .append("requestBody=").append(apiTestCase.getRequestBody()).append(", ")
