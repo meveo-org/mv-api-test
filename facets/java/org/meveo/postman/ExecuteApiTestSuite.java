@@ -536,77 +536,79 @@ public class ExecuteApiTestSuite extends Script {
 
                 Map<String, Object> body = (Map<String, Object>) request.get("body");
 
-                if ("urlencoded".equals(body.get("mode"))) {
-                    log.debug("method=POST ");
-                    ArrayList<Object> formdata = (ArrayList<Object>) body.get("urlencoded");
-                    Form form = new Form();
-                    for (Object rawParam : formdata) {
-                        Map<String, Object> param = (Map<String, Object>) rawParam;
-                        log.debug("form parameter key="+((String) param.get("key"))+" and Value assigned = "+replaceVars((String) param.get("value")));
-                        form.param((String) param.get("key"), replaceVars((String) param.get("value")));
-                    }
-                    entity = Entity.form(form);
-                } else if ("formdata".equals(body.get("mode"))) {
-                    ArrayList<Object> formdata = (ArrayList<Object>) body.get(body.get("mode"));
-                    MultipartFormDataOutput mdo = new MultipartFormDataOutput();
-                    for (Object rawParam : formdata) {
-                        Map<String, Object> param = (Map<String, Object>) rawParam;
-                        if ("file".equals(param.get("type"))) {
-                            try {
-                                mdo.addFormData((String) param.get("key"), new FileInputStream(new File(replaceVars((String) param.get("value")))),
-                                        MediaType.APPLICATION_OCTET_STREAM_TYPE);
-                            } catch (FileNotFoundException e) {
-                                response.close();
-                                apiTestCase.setResponseStatus((long)response.getStatus());
-                                throw new ScriptException("cannot read file : " + request.get("method"));
-                            }
-                        } else {
-                            MediaType mediaType = MediaType.TEXT_PLAIN_TYPE;
-                            try {
-                                MediaType.valueOf((String) param.get("contentType"));
-                            } catch (Exception e) {
-                                mediaType = MediaType.TEXT_PLAIN_TYPE;
-                            }
-                            mdo.addFormData((String) param.get("key"), replaceVars((String) param.get("value")), mediaType);
+                if (body != null) {
+                    if ("urlencoded".equals(body.get("mode"))) {
+                        log.debug("method=POST ");
+                        ArrayList<Object> formdata = (ArrayList<Object>) body.get("urlencoded");
+                        Form form = new Form();
+                        for (Object rawParam : formdata) {
+                            Map<String, Object> param = (Map<String, Object>) rawParam;
+                            log.debug("form parameter key="+((String) param.get("key"))+" and Value assigned = "+replaceVars((String) param.get("value")));
+                            form.param((String) param.get("key"), replaceVars((String) param.get("value")));
                         }
+                        entity = Entity.form(form);
+                    } else if ("formdata".equals(body.get("mode"))) {
+                        ArrayList<Object> formdata = (ArrayList<Object>) body.get(body.get("mode"));
+                        MultipartFormDataOutput mdo = new MultipartFormDataOutput();
+                        for (Object rawParam : formdata) {
+                            Map<String, Object> param = (Map<String, Object>) rawParam;
+                            if ("file".equals(param.get("type"))) {
+                                try {
+                                    mdo.addFormData((String) param.get("key"), new FileInputStream(new File(replaceVars((String) param.get("value")))),
+                                            MediaType.APPLICATION_OCTET_STREAM_TYPE);
+                                } catch (FileNotFoundException e) {
+                                    response.close();
+                                    apiTestCase.setResponseStatus((long)response.getStatus());
+                                    throw new ScriptException("cannot read file : " + request.get("method"));
+                                }
+                            } else {
+                                MediaType mediaType = MediaType.TEXT_PLAIN_TYPE;
+                                try {
+                                    MediaType.valueOf((String) param.get("contentType"));
+                                } catch (Exception e) {
+                                    mediaType = MediaType.TEXT_PLAIN_TYPE;
+                                }
+                                mdo.addFormData((String) param.get("key"), replaceVars((String) param.get("value")), mediaType);
+                            }
+                        }
+                        entity = Entity.entity(mdo, MediaType.MULTIPART_FORM_DATA_TYPE);
+                    } else if ("raw".equals(body.get("mode"))) {
+                        var rawBody = replaceVars((String) body.get("raw"));
+                        var language = getLanguageOfRawRequestBody(body);
+                        switch(language) {
+                            case "text":
+                                entity = Entity.text(rawBody);
+                                break;
+                            case "javascript":                        
+                                entity = Entity.entity(rawBody, "application/javascript");
+                                break;
+                            case "json":
+                                entity = Entity.json(rawBody);
+                                break;
+                            case "html":
+                                entity = Entity.html(rawBody);
+                                break;
+                            case "xml":
+                                entity = Entity.xml(rawBody);
+                                break;
+                        }
+                    } else if ("file".equals(body.get("mode"))) {
+                        Map<String, Object> file = (Map<String, Object>) request.get("file");
+                        MultipartFormDataOutput mdo = new MultipartFormDataOutput();
+                        try {
+                            mdo.addFormData("file", new FileInputStream(new File(replaceVars((String) file.get("src")))),
+                                    MediaType.APPLICATION_OCTET_STREAM_TYPE); //NOTE we allow to use variables in the file src
+                        } catch (FileNotFoundException e) {
+                            response.close();
+                            apiTestCase.setResponseStatus((long)response.getStatus());                        
+                            throw new ScriptException("cannot read file : " + request.get("method"));
+                        }
+                        entity = Entity.entity(mdo, MediaType.MULTIPART_FORM_DATA_TYPE);
                     }
-                    entity = Entity.entity(mdo, MediaType.MULTIPART_FORM_DATA_TYPE);
-                } else if ("raw".equals(body.get("mode"))) {
-                    var rawBody = replaceVars((String) body.get("raw"));
-                    var language = getLanguageOfRawRequestBody(body);
-                    switch(language) {
-                        case "text":
-                            entity = Entity.text(rawBody);
-                            break;
-                        case "javascript":                        
-                            entity = Entity.entity(rawBody, "application/javascript");
-                            break;
-                        case "json":
-                            entity = Entity.json(rawBody);
-                            break;
-                        case "html":
-                            entity = Entity.html(rawBody);
-                            break;
-                        case "xml":
-                            entity = Entity.xml(rawBody);
-                            break;
-                    }
-                } else if ("file".equals(body.get("mode"))) {
-                    Map<String, Object> file = (Map<String, Object>) request.get("file");
-                    MultipartFormDataOutput mdo = new MultipartFormDataOutput();
-                    try {
-                        mdo.addFormData("file", new FileInputStream(new File(replaceVars((String) file.get("src")))),
-                                MediaType.APPLICATION_OCTET_STREAM_TYPE); //NOTE we allow to use variables in the file src
-                    } catch (FileNotFoundException e) {
-                        response.close();
-                        apiTestCase.setResponseStatus((long)response.getStatus());                        
-                        throw new ScriptException("cannot read file : " + request.get("method"));
-                    }
-                    entity = Entity.entity(mdo, MediaType.MULTIPART_FORM_DATA_TYPE);
-                }
 
-                log.info("Request Body looks like =>"+entity.toString());
-                apiTestCase.setRequestBody(entity.toString());
+                    log.info("Request Body looks like =>"+entity.toString());
+                    apiTestCase.setRequestBody(entity.toString());
+                }
 
                 if ("POST".equals(request.get("method"))) {
                     log.debug("Just before making a post call");
