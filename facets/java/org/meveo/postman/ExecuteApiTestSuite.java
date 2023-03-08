@@ -572,7 +572,25 @@ public class ExecuteApiTestSuite extends Script {
                     }
                     entity = Entity.entity(mdo, MediaType.MULTIPART_FORM_DATA_TYPE);
                 } else if ("raw".equals(body.get("mode"))) {
-                    entity = Entity.text(replaceVars((String) body.get("raw")));
+                    var rawBody = replaceVars((String) body.get("raw"));
+                    var language = (String)((Map<String, Object>)((Map<String, Object>)body.get("options")).get("raw")).get("language");
+                    switch(language) {
+                        case "text":
+                            entity = Entity.text(rawBody);
+                            break;
+                        case "javascript":                        
+                            entity = Entity.entity(rawBody, "application/javascript");
+                            break;
+                        case "json":
+                            entity = Entity.json(rawBody);
+                            break;
+                        case "html":
+                            entity = Entity.html(rawBody);
+                            break;
+                        case "xml":
+                            entity = Entity.xml(rawBody);
+                            break;
+                    }
                 } else if ("file".equals(body.get("mode"))) {
                     Map<String, Object> file = (Map<String, Object>) request.get("file");
                     MultipartFormDataOutput mdo = new MultipartFormDataOutput();
